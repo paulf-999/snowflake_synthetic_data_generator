@@ -2,12 +2,18 @@
 
 Python scripts to create synthetic data in Snowflake, based upon the list of input table schemas.
 
+## Summary
+
+* For each input table listed in `ip/config.yaml`, these scripts generate X amount of fake data records.
+  * Where X is based upon the value of `num_records_to_generate` in `ip/config.yaml`.
+* The script then inserts the generated fake data into each of the target tables.
+
 ---
 
-## Technologies Used
+### Technologies Used
 
-* Makefile
-* Python
+* `Makefile`
+* `Python`
 * The Python packages (see `requirements.txt`):
   * `snowflake-connector-python` - to query the Snowflake DB from the python script.
   * `pandas` - to write Snowflake query output to Pandas data frames.
@@ -26,8 +32,21 @@ Before you begin, ensure you have met the following requirements:
 Run `make install` to:
 
 * Write the table schemas for each input table listed underneath the `input_tbls` key in `ip/config.yaml`.
+  * Note: the table schema output is written to `tmp/table_schemas/{input_tbl}.csv`.
+  * See the python function `get_table_schema()` in `snowflake_query.py`.
 * Generate X amount of fake data records (based upon the value of `num_records_to_generate` in `ip/config.yaml`) for each data type within each input table
+  * Note: the generated fake data for each table is written to `op/fake_data/{input_tbl}.csv`.
+  * See the function `generate_fake_data()` in `gen_fake_data.py`.
 * Insert the generated fake data into each of the target tables listed underneath the `input_tbls` key in `ip/config.yaml`.
+  generate_fake_data
+  * See the function `insert_fake_data()` in `gen_fake_data.py`.
+
+---
+
+## TODOs
+
+* Complete the function 'insert_fake_data() in `gen_fake_data.py`.
+* Add initial `validate_sf_connection` step.
 
 ---
 

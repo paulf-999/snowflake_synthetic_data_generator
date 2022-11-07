@@ -24,6 +24,14 @@ logger = logging.getLogger('application_logger')
 logger.setLevel(logging.INFO)
 
 
+def insert_fake_data():
+    """Insert generated fake data into target table"""
+
+    logger.info('Hello, world!')
+
+    return
+
+
 def process_generated_sql(generated_sql, row, column_count, df, fake_data):
     """repeated orchestration logic used for every (data type) fake data generation"""
 
@@ -126,3 +134,6 @@ if __name__ == '__main__':
 
         # invoke the main orchestration logic per-input table
         generate_fake_data(input_tbl, df, num_records)
+
+        # TODO: insert the fake data
+        insert_fake_data()
