@@ -1,3 +1,16 @@
 ---
 general_params:
   env: dev
+  input_tbls:
+    products
+    brands
+    categories
+    stocks
+  num_records_to_generate: 2
+db_connection_params:
+  snowflake_username: # e.g., jbloggs@email.com
+  snowflake_pass:
+  snowflake_account: <snowflake_account>.ap-southeast-2
+  snowflake_wh:
+  snowflake_db:
+  snowflake_db_schema:

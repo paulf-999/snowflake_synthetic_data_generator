@@ -40,3 +40,6 @@ logs
 # Runtime data
 pids
 *.pid
+
+# dev-version of input config file
+config_mine.yaml

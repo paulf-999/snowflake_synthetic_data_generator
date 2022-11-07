@@ -22,12 +22,13 @@ deps: get_ips
 	@echo "----------------------------------------------------------------------------------------------------------------------"
 	@echo -e "${COLOUR_TXT_FMT_OPENING}Target: 'deps'. Download the relevant pip package dependencies (note: ignore the pip depedency resolver errors.)${COLOUR_TXT_FMT_CLOSING}"
 	@echo "----------------------------------------------------------------------------------------------------------------------"
-	@pip3 install -r requirements -q
+	@pip3 install -r requirements.txt -q
 	@pip3 install yq -q
 
 install: get_ips
 	@echo "------------------------------------------------------------------"
 	@echo -e "${COLOUR_TXT_FMT_OPENING}Target: 'install'. Run the setup and install targets.${COLOUR_TXT_FMT_CLOSING}"
+	@python3 py/gen_fake_data.py
 	@echo "------------------------------------------------------------------"
 
 clean:
@@ -52,5 +53,6 @@ validate_user_ip: get_ips
 	# INFO: Verify the user has provided a value for the key 'env' in ip/config.yaml
 	@[ "${ENV}" ] || ( echo "\nError: 'ENV' key is empty in ip/config.yaml\n"; exit 1 )
 
+# WIP
 run_pytests:
 	pytest -rA tests/ --no-header --disable-pytest-warnings --color=yes
