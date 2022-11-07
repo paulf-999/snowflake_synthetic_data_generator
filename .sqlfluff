@@ -1,0 +1,34 @@
+[sqlfluff]
+dialect = snowflake
+templater = dbt
+#templater = jinja
+sql_file_exts = .sql,.sql.j2,.dml,.ddl
+
+[sqlfluff:templater:dbt]
+# pass in our dbt project/cred details
+project_dir =
+profiles_dir =
+profile =
+
+# allow aliasing in from clauses and join conditions.
+exclude_rules = L031
+
+[sqlfluff:indentation]
+indented_joins = true
+
+[sqlfluff:rules]
+comma_style = leading
+
+[sqlfluff:rules:L010] # Inconsistent capitalisation of keywords.
+capitalisation_policy = upper
+[sqlfluff:rules:L028] # References should be consistent in statements with a single table.
+single_table_references = unqualified
+[sqlfluff:rules:L030] # Inconsistent capitalisation of function names.
+capitalisation_policy = upper
+[sqlfluff:rules:L038] # trailing commas within select clauses
+select_clause_trailing_comma = forbid
+[sqlfluff:rules:L040] # Inconsistent capitalisation of boolean/null literal.
+capitalisation_policy = upper
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = True
