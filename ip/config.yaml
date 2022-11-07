@@ -8,10 +8,10 @@ general_params:
     stocks
   num_records_to_generate: 2
 db_connection_params:
+  snowflake_account: <snowflake_account>.ap-southeast-2
   snowflake_username: # e.g., jbloggs@email.com
   snowflake_pass:
   snowflake_p8_key:
-  snowflake_account: <snowflake_account>.ap-southeast-2
   snowflake_wh:
   snowflake_role:
   snowflake_db:
