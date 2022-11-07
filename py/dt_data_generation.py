@@ -43,17 +43,14 @@ def gen_fake_numeric_data(row):
 
         split_str = row['data_type'].split('(')[1].split(',')
         precision = split_str[0]
-
         logger.debug(f'precision = {precision}')
-        # scale = split_str[1].split(")")[0]
-
-        # print(precision.MAX_PREC)
-
-        # generate random number to (max) precision
-        # fake_numeric_data = random.randint(1, 10**int(precision))
 
         # generating data to 38 precision produces too high numbers. Just limit to 100
         fake_numeric_data = random.randint(1, 100)
+
+        # though if you do want to generate fake data to precision, use the below:
+        # generate random number to (max) precision
+        # fake_numeric_data = random.randint(1, 10**int(precision))
 
     return fake_numeric_data
 

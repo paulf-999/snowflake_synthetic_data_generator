@@ -42,5 +42,4 @@ def get_table_schema(input_tbl):
                 query_op.write('\n')
         finally:
             cursor.close()
-
         conn.close()

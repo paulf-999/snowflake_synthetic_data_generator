@@ -26,6 +26,7 @@ logger.setLevel(logging.INFO)
 
 def process_generated_sql(generated_sql, row, column_count, df, fake_data):
     """repeated orchestration logic used for every (data type) fake data generation"""
+
     # append the generated output to the SQL 'insert into' statement
     logger.debug(f'column_count= {column_count}')
 
@@ -98,6 +99,7 @@ def generate_fake_data(input_tbl, df, num_records):
 
 def read_table_schema(input_tbl):
     """read the table schema into a df"""
+
     # sf table schema for 'describe() function output
     col_names = [
         'col_name', 'data_type', 'kind', 'null', 'default', 'primary_key', 'unique_key', 'check', 'expression', 'comment', 'policy_name', '-'
