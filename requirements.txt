@@ -1,4 +1,6 @@
+cryptography
 pandas
+pyarrow[pandas]==8.0.0
 pyyaml
 snowflake-connector-python
 yq

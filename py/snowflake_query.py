@@ -1,19 +1,30 @@
 #!/usr/bin/env python
 import inputs
 import snowflake.connector
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
 
 
 def create_snowflake_connection():
     # get inputs
-    snowflake_username, snowflake_pass, snowflake_account, snowflake_wh, snowflake_db, snowflake_db_schema = inputs.get_sf_conn_params()
+    sf_username, sf_pass, sf_account, sf_wh, sf_role, sf_db, sf_db_schema = inputs.get_sf_conn_params()
+
+    # uncomment this line if you're using a p8 key
+    # sf_username, sf_p8_key_path, sf_account, sf_wh, sf_role, sf_db, sf_db_schema = inputs.get_sf_conn_params()
+
+    # if a p8 key is used, render the key as required
+    # if sf_p8_key_path:
+    #     pkb = private_key_bytes(sf_p8_key_path)
 
     conn = snowflake.connector.connect(
-        user=snowflake_username,
-        password=snowflake_pass,
-        account=snowflake_account,
-        warehouse=snowflake_wh,
-        database=snowflake_db,
-        schema=snowflake_db_schema
+        user=sf_username,
+        password=sf_pass,
+        # private_key=pkb,
+        account=sf_account,
+        warehouse=sf_wh,
+        role='r_f_airflow_dev',
+        database=sf_db,
+        schema=sf_db_schema
     )
 
     return conn
@@ -43,3 +54,27 @@ def get_table_schema(input_tbl):
         finally:
             cursor.close()
         conn.close()
+
+
+# render private key for snowflake connection
+def private_key_bytes(p8_key_path: str):
+    with open(p8_key_path, 'rb') as key:
+        p_key = serialization.load_pem_private_key(
+            key.read(),
+            None,
+            backend=default_backend()
+        )
+
+    return p_key.private_bytes(
+        encoding=serialization.Encoding.DER,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+
+
+if __name__ == '__main__':
+    """This is executed when run from the command line"""
+
+    example_tbl = 'abc'
+
+    get_table_schema(example_tbl)
