@@ -22,7 +22,7 @@ def create_snowflake_connection():
         # private_key=pkb,
         account=sf_account,
         warehouse=sf_wh,
-        role='r_f_airflow_dev',
+        role=sf_role,
         database=sf_db,
         schema=sf_db_schema
     )
