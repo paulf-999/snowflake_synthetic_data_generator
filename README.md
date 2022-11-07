@@ -29,7 +29,7 @@ Before you begin, ensure you have met the following requirements:
 
 ## How-to Run
 
-Run `make install` to:
+Run `make run` to:
 
 * Write the table schemas for each input table listed underneath the `input_tbls` key in `ip/config.yaml`.
   * Note: the table schema output is written to `tmp/table_schemas/{input_tbl}.csv`.

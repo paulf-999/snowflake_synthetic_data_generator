@@ -27,7 +27,7 @@ logger.setLevel(logging.INFO)
 def insert_fake_data():
     """Insert generated fake data into target table"""
 
-    logger.info('Hello, world!')
+    logger.debug('Hello, world!')
 
     return
 
@@ -55,6 +55,9 @@ def process_generated_sql(generated_sql, row, column_count, df, fake_data):
 def generate_fake_data(input_tbl, df, num_records):
     """For a given input table, generate X (num_records) fake records"""
 
+    # write logging message to console
+    logger.info(f"Generating fake data for: '{input_tbl}'.")
+
     # generated_sql will be continually be appended to in orchestrate_fake_data_generation()
     generated_sql = f'INSERT INTO {input_tbl.upper()} VALUES \n'
     logger.debug(f'len(df) = {len(df)}')
@@ -71,7 +74,7 @@ def generate_fake_data(input_tbl, df, num_records):
 
             # generated_sql += orchestrate_fake_data_generation(row, generated_sql, df, column_count=1)
 
-            logger.info(f"col_name: {row['col_name']}\ndata_type: {row['data_type']}")
+            logger.debug(f"col_name: {row['col_name']}\ndata_type: {row['data_type']}")
 
             # these 3 vars are lists used to store generated fake data
             fake_numeric_data = fake_string_data = fake_date_time_data = []

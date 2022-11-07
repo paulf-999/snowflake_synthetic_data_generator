@@ -16,24 +16,24 @@ CONFIG_FILE := ip/config.yaml
 COLOUR_TXT_FMT_OPENING := \033[0;33m
 COLOUR_TXT_FMT_CLOSING := \033[0m
 
-installations: deps install clean
+installations: deps run clean
 
 deps: get_ips
 	@echo "----------------------------------------------------------------------------------------------------------------------"
-	@echo -e "${COLOUR_TXT_FMT_OPENING}Target: 'deps'. Download the relevant pip package dependencies (note: ignore the pip depedency resolver errors.)${COLOUR_TXT_FMT_CLOSING}"
+	@echo "${COLOUR_TXT_FMT_OPENING}Target: 'deps'. Download the relevant pip package dependencies (note: ignore the pip depedency resolver errors.)${COLOUR_TXT_FMT_CLOSING}"
 	@echo "----------------------------------------------------------------------------------------------------------------------"
 	@pip3 install -r requirements.txt -q
 	@pip3 install yq -q
 
-install: get_ips
+run: get_ips
 	@echo "------------------------------------------------------------------"
-	@echo -e "${COLOUR_TXT_FMT_OPENING}Target: 'install'. Run the setup and install targets.${COLOUR_TXT_FMT_CLOSING}"
+	@echo "${COLOUR_TXT_FMT_OPENING}Target: 'run'. Run the execution script.${COLOUR_TXT_FMT_CLOSING}"
+	@echo "------------------------------------------------------------------"
 	@python3 py/gen_fake_data.py
-	@echo "------------------------------------------------------------------"
 
 clean:
 	@echo "------------------------------------------------------------------"
-	@echo -e "${COLOUR_TXT_FMT_OPENING}Target 'clean'. Remove any redundant files, e.g. downloads.${COLOUR_TXT_FMT_CLOSING}"
+	@echo "${COLOUR_TXT_FMT_OPENING}Target 'clean'. Remove any redundant files, e.g. downloads.${COLOUR_TXT_FMT_CLOSING}"
 	@echo "------------------------------------------------------------------"
 
 #############################################################################################
