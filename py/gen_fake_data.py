@@ -75,7 +75,7 @@ def generate_fake_data(input_tbl, df, num_records):
             logger.info(f"col_name: {row['col_name']}\tdata_type: {row['data_type']}")
 
             # these 3 vars are lists used to store generated fake data
-            fake_numeric_data = fake_string_data = fake_date_time_data = []
+            fake_numeric_data = fake_string_data = fake_time_data = []
 
             if row['data_type'].startswith('VARCHAR'):
                 logger.debug(r'\Data type = string')
@@ -93,10 +93,10 @@ def generate_fake_data(input_tbl, df, num_records):
 
             if row['data_type'].startswith('TIMESTAMP'):
                 logger.debug(r'\Data type = timestamp')
-                fake_date_time_data = dt_generator.gen_fake_date_time_data(row)
+                fake_time_data = dt_generator.gen_fake_time_data(row)
 
                 # append the generated output to the SQL 'insert into' statement
-                generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_date_time_data)
+                generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_time_data)
 
         generated_sql += ')\n'
     generated_sql += ';'

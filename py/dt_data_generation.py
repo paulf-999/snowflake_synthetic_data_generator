@@ -30,12 +30,13 @@ def gen_fake_string_data(row):
     # in case a date field is accidently captured as a string, include data generation for it here
     elif 'DATE' in row['col_name'].upper():
         fake_string_data = f"to_date('{fake_generator.date_between(current_dt_obj - timedelta(days=5), current_dt_obj)}')"
-
+    # generate fake string data for everything else
     elif row['data_type'].startswith('VARCHAR'):
-        # generating a string to max length produces too long strings. Limit to 20 and uncomment the line below if otherwise wanted.
-        # varchar_length = row['data_type'].split('(')[1].split(')')[0]
-
         fake_string_data = ''.join(random.choice(string.ascii_lowercase) for i in range(int(20)))
+
+        # generating a string to max length produces too long strings. Limit to 20 and uncomment the line below if otherwise wanted.
+
+        # varchar_length = row['data_type'].split('(')[1].split(')')[0]
         # fake_string_data = ''.join(random.choice(string.ascii_lowercase) for i in range(int(varchar_length)))
 
     return fake_string_data
@@ -63,13 +64,15 @@ def gen_fake_numeric_data(row):
         # limit year a value in the last 5 years
         elif 'YEAR' in row['col_name'].upper():
             fake_numeric_data = random.randint(date.today().year-5, date.today().year)
+        # generate fake numeric data for everything else
         else:
-            # generating data to high precisions (e.g., 38) too big numbers. Limit to 50 and uncomment the line below if otherwise wanted.
             fake_numeric_data = random.randint(1, 50)
 
-        # though if you do want to generate fake data to precision, use the below:
-        # generate random number to (max) precision
-        # fake_numeric_data = random.randint(1, 10**int(precision))
+            # generating data to high precisions (e.g., 38) too big numbers. Limit to 50 and uncomment the line below if otherwise wanted.
+            # though if you do want to generate fake data to precision, use the below:
+
+            # generate random number to (max) precision
+            # fake_numeric_data = random.randint(1, 10**int(precision))
 
     return fake_numeric_data
 
@@ -77,8 +80,8 @@ def gen_fake_numeric_data(row):
 def gen_fake_date_time_data(row):
 
     # TODO: multiple checks, e.g.: date vs datetime vs time?
-    fake_date_time_data = ''
+    fake_time_data = ''
 
-    fake_date_time_data = f"to_date('{fake_generator.date_between(current_dt_obj - timedelta(days=5), current_dt_obj)}')"
+    fake_time_data = f"to_date('{fake_generator.date_between(current_dt_obj - timedelta(days=5), current_dt_obj)}')"
 
-    return fake_date_time_data
+    return fake_time_data
