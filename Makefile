@@ -6,8 +6,6 @@ SHELL = /bin/sh
 # make install		# perform the end-to-end install
 # make clean		# perform a housekeeping cleanup
 
-# all: deps install [X, Y, Z...] clean
-
 .EXPORT_ALL_VARIABLES:
 .PHONY = installations deps install clean get_ips validate_user_ip
 
