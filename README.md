@@ -46,7 +46,6 @@ Run `make run` to:
 ## TODOs
 
 * Complete the function 'insert_fake_data() in `gen_fake_data.py`.
-* Add initial `validate_sf_connection` step.
 
 ---
 
