@@ -45,4 +45,4 @@ pids
 config_mine.yaml
 
 # generated sql output
-op/fake_data/*.sql
+op/*.sql

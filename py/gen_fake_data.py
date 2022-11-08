@@ -101,7 +101,7 @@ def generate_fake_data(input_tbl, df, num_records):
         generated_sql += ')\n'
     generated_sql += ';'
 
-    with open(f'op/fake_data/{input_tbl}.sql', 'w') as op_sql:
+    with open(f'op/{input_tbl}.sql', 'w') as op_sql:
         logger.debug(generated_sql)
         op_sql.write(generated_sql)
 
@@ -114,7 +114,7 @@ def read_table_schema(input_tbl):
         'col_name', 'data_type', 'kind', 'null', 'default', 'primary_key', 'unique_key', 'check', 'expression', 'comment', 'policy_name', '-'
     ]
 
-    df = pd.read_csv(f'tmp/table_schemas/{input_tbl}.csv', sep=';', names=col_names).reset_index()
+    df = pd.read_csv(f'tmp/{input_tbl}.csv', sep=';', names=col_names).reset_index()
     logger.debug(df)
 
     return df
@@ -137,7 +137,7 @@ if __name__ == '__main__':
         logger.info(f"\nGenerating fake data for: '{input_tbl}'.\n")
 
         # write the query output to the tmp folder
-        with open(f'tmp/table_schemas/{input_tbl}.csv', 'w') as tmp_sf_tbl_schema:
+        with open(f'tmp/{input_tbl}.csv', 'w') as tmp_sf_tbl_schema:
             # fetch the schema of the given input table
             sf_query_op = snowflake_client.snowflake_query(query=f'DESC table {input_tbl};')
             tmp_sf_tbl_schema.write(sf_query_op)

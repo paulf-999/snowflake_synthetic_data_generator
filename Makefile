@@ -35,8 +35,8 @@ clean:
 	@echo "------------------------------------------------------------------"
 	@echo "${COLOUR_TXT_FMT_OPENING}Target 'clean'. Remove any redundant files, e.g. downloads.${COLOUR_TXT_FMT_CLOSING}"
 	@echo "------------------------------------------------------------------"
-	@rm -rf tmp/table_schemas/*.csv
-	@rm -rf op/fake_data/*.csv
+	@rm -rf tmp/*.csv
+	@rm -rf op/*.csv
 
 #############################################################################################
 # Setup/validation targets: 'get_ips' & 'validate_user_ip'
