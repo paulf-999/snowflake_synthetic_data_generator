@@ -32,10 +32,10 @@ Before you begin, ensure you have met the following requirements:
 Run `make run` to:
 
 * Write the table schemas for each input table listed underneath the `input_tbls` key in `ip/config.yaml`.
-  * Note: the table schema output is written to `tmp/table_schemas/{input_tbl}.csv`.
+  * Note: the table schema output is written to `tmp/{input_tbl}.csv`.
   * See the python function `get_table_schema()` in `snowflake_query.py`.
 * Generate X amount of fake data records (based upon the value of `num_records_to_generate` in `ip/config.yaml`) for each data type within each input table
-  * Note: the generated fake data for each table is written to `op/fake_data/{input_tbl}.csv`.
+  * Note: the generated fake data for each table is written to `op/{input_tbl}.csv`.
   * See the function `generate_fake_data()` in `gen_fake_data.py`.
 * Insert the generated fake data into each of the target tables listed underneath the `input_tbls` key in `ip/config.yaml`.
   generate_fake_data
