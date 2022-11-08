@@ -1,6 +1,6 @@
 # Snowflake Synthetic Data Generator
 
-Python scripts to create synthetic data in Snowflake, based upon the list of input table schemas.
+Python scripts to create synthetic data in Snowflake, based upon a list of input table schemas provided.
 
 ## Summary
 
