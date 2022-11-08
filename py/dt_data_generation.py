@@ -28,9 +28,11 @@ def gen_fake_string_data(row):
         fake_string_data = fake_generator.first_name()
 
     elif row['data_type'].startswith('VARCHAR'):
-        varchar_length = row['data_type'].split('(')[1].split(')')[0]
+        # generating a string to max length produces too long strings. Limit to 20 and uncomment the line below if otherwise wanted.
+        # varchar_length = row['data_type'].split('(')[1].split(')')[0]
 
-        fake_string_data = ''.join(random.choice(string.ascii_lowercase) for i in range(int(varchar_length)))
+        fake_string_data = ''.join(random.choice(string.ascii_lowercase) for i in range(int(20)))
+        # fake_string_data = ''.join(random.choice(string.ascii_lowercase) for i in range(int(varchar_length)))
 
     return fake_string_data
 
@@ -45,8 +47,8 @@ def gen_fake_numeric_data(row):
         precision = split_str[0]
         logger.debug(f'precision = {precision}')
 
-        # generating data to 38 precision produces too high numbers. Just limit to 100
-        fake_numeric_data = random.randint(1, 100)
+        # generating data to 38 precision produces too high numbers. Limit to 50 and uncomment the line below if otherwise wanted.
+        fake_numeric_data = random.randint(1, 50)
 
         # though if you do want to generate fake data to precision, use the below:
         # generate random number to (max) precision

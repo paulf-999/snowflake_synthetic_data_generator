@@ -16,7 +16,7 @@ import pandas as pd
 # custom modules
 import inputs
 import dt_data_generation as dt_generator
-import snowflake_query
+import snowflake_client
 
 # Set up a specific logger with our desired output level
 logging.basicConfig(format='%(message)s')
@@ -55,12 +55,10 @@ def process_generated_sql(generated_sql, row, column_count, df, fake_data):
 def generate_fake_data(input_tbl, df, num_records):
     """For a given input table, generate X (num_records) fake records"""
 
-    # write logging message to console
-    logger.info(f"Generating fake data for: '{input_tbl}'.")
+    logger.debug(f'len(df) = {len(df)}')
 
     # generated_sql will be continually be appended to in orchestrate_fake_data_generation()
     generated_sql = f'INSERT INTO {input_tbl.upper()} VALUES \n'
-    logger.debug(f'len(df) = {len(df)}')
 
     # generate the fake data for the amount of rows specified by `num_records`
     for row_to_generate in range(0, int(num_records)):
@@ -74,7 +72,7 @@ def generate_fake_data(input_tbl, df, num_records):
 
             # generated_sql += orchestrate_fake_data_generation(row, generated_sql, df, column_count=1)
 
-            logger.debug(f"col_name: {row['col_name']}\ndata_type: {row['data_type']}")
+            logger.info(f"col_name: {row['col_name']}\tdata_type: {row['data_type']}")
 
             # these 3 vars are lists used to store generated fake data
             fake_numeric_data = fake_string_data = fake_date_time_data = []
@@ -103,7 +101,7 @@ def generate_fake_data(input_tbl, df, num_records):
         generated_sql += ')\n'
     generated_sql += ';'
 
-    with open(f'op/fake_data/{input_tbl}.csv', 'w') as op_sql:
+    with open(f'op/fake_data/{input_tbl}.sql', 'w') as op_sql:
         logger.debug(generated_sql)
         op_sql.write(generated_sql)
 
@@ -128,9 +126,21 @@ if __name__ == '__main__':
     # get 'general' params from input config
     input_tbls, num_records = inputs.get_general_params()
 
+    # validate connectivity to SF db
+    sf_query_op = snowflake_client.snowflake_query(query='SELECT current_version();')
+    logger.debug(f'sf_query_op = {sf_query_op}')
+    logger.info('\nINFO: Connectivity to SF db confirmed.')
+
     for input_tbl in input_tbls:
-        # fetch the schema of the given input table
-        snowflake_query.get_table_schema(input_tbl)
+
+        # write logging message to console
+        logger.info(f"\nGenerating fake data for: '{input_tbl}'.\n")
+
+        # write the query output to the tmp folder
+        with open(f'tmp/table_schemas/{input_tbl}.csv', 'w') as tmp_sf_tbl_schema:
+            # fetch the schema of the given input table
+            sf_query_op = snowflake_client.snowflake_query(query=f'DESC table {input_tbl};')
+            tmp_sf_tbl_schema.write(sf_query_op)
 
         # read the table schema into a df
         df = read_table_schema(input_tbl)

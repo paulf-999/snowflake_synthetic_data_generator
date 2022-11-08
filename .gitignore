@@ -43,3 +43,6 @@ pids
 
 # dev-version of input config file
 config_mine.yaml
+
+# generated sql output
+op/fake_data/*.sql

@@ -16,7 +16,7 @@ CONFIG_FILE := ip/config.yaml
 COLOUR_TXT_FMT_OPENING := \033[0;33m
 COLOUR_TXT_FMT_CLOSING := \033[0m
 
-installations: deps run clean
+installations: deps clean run
 
 deps: get_ips
 	@echo "----------------------------------------------------------------------------------------------------------------------"
@@ -25,7 +25,7 @@ deps: get_ips
 	@pip3 install -r requirements.txt -q
 	@pip3 install yq -q
 
-run: get_ips
+run: clean get_ips
 	@echo "------------------------------------------------------------------"
 	@echo "${COLOUR_TXT_FMT_OPENING}Target: 'run'. Run the execution script.${COLOUR_TXT_FMT_CLOSING}"
 	@echo "------------------------------------------------------------------"
@@ -35,6 +35,8 @@ clean:
 	@echo "------------------------------------------------------------------"
 	@echo "${COLOUR_TXT_FMT_OPENING}Target 'clean'. Remove any redundant files, e.g. downloads.${COLOUR_TXT_FMT_CLOSING}"
 	@echo "------------------------------------------------------------------"
+	@rm -rf tmp/table_schemas/*.csv
+	@rm -rf op/fake_data/*.csv
 
 #############################################################################################
 # Setup/validation targets: 'get_ips' & 'validate_user_ip'

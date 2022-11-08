@@ -12,6 +12,7 @@ db_connection_params:
   snowflake_username: # e.g., jbloggs@email.com
   snowflake_pass:
   snowflake_p8_key:
+  snowflake_p8_key_passphrase:
   snowflake_wh:
   snowflake_role:
   snowflake_db:
