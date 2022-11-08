@@ -18,16 +18,9 @@ def create_snowflake_connection(conn=''):
     """create a sf connection instance"""
     # get inputs
     sf_conn_details = inputs.get_sf_conn_params()
-    sf_username, sf_pass, sf_account, sf_wh, sf_role, sf_db, sf_db_schema = inputs.get_sf_conn_params()
 
-    # uncomment this line if you're using a p8 key
-    # sf_username, sf_p8_key_path, sf_account, sf_wh, sf_role, sf_db, sf_db_schema = inputs.get_sf_conn_params()
-
-    """
     # if a p8 key is used, render the key as required
-    if sf_p8_key_path:
-        pkb = private_key_bytes(sf_conn_details["sf_p8_key_path"], sf_conn_details["sf_p8_key_passphrase"])
-    """
+    # pkb = private_key_bytes(sf_conn_details["sf_p8_key_path"], sf_conn_details["sf_p8_key_passphrase"])
 
     try:
         conn = snowflake.connector.connect(

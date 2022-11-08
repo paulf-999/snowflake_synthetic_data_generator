@@ -27,7 +27,7 @@ def gen_fake_string_data(row):
     # to facilitate table joins, limit IDs to a range of 10 values
     elif 'ID' in row['col_name'].upper():
         fake_string_data = str(random.randint(1, 10))
-    # in case a date field is accidently captured as a string, include data generation for it here
+    # in case a date field is accidentally captured as a string, include data generation for it here
     elif 'DATE' in row['col_name'].upper():
         fake_string_data = f"to_date('{fake_generator.date_between(current_dt_obj - timedelta(days=5), current_dt_obj)}')"
     # generate fake string data for everything else

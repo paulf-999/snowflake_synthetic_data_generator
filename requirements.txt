@@ -1,4 +1,5 @@
 cryptography
+Faker
 pandas
 pyarrow[pandas]==8.0.0
 pyyaml
