@@ -69,7 +69,6 @@ def snowflake_query(query, sf_query_op=''):
 
             for column in tuple_result:
                 sf_query_op += f'{column};'
-
             sf_query_op += '\n'
     finally:
         cursor.close()
