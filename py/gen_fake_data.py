@@ -70,9 +70,7 @@ def generate_fake_data(input_tbl, df, num_records):
         # Determine the data types of the table schema
         for index, row in df.iterrows():
 
-            # generated_sql += orchestrate_fake_data_generation(row, generated_sql, df, column_count=1)
-
-            logger.info(f"col_name: {row['col_name']}\tdata_type: {row['data_type']}")
+            logger.debug(f"col_name: {row['col_name']}\tdata_type: {row['data_type']}")
 
             # these 3 vars are lists used to store generated fake data
             fake_numeric_data = fake_string_data = fake_time_data = []
@@ -98,8 +96,13 @@ def generate_fake_data(input_tbl, df, num_records):
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_time_data)
 
-        generated_sql += ')\n'
-    generated_sql += ';'
+        logger.debug(f'int(num_records) = {int(num_records)}')
+        logger.debug(f'row_to_generate = {int(row_to_generate)+1}')
+
+        if int(row_to_generate)+1 != int(num_records):
+            generated_sql += '),\n'
+        else:
+            generated_sql += ');'
 
     with open(f'op/{input_tbl}.sql', 'w') as op_sql:
         logger.debug(generated_sql)
@@ -131,10 +134,14 @@ if __name__ == '__main__':
     logger.debug(f'sf_query_op = {sf_query_op}')
     logger.info('\nINFO: Connectivity to SF db confirmed.')
 
+    # iterate through each of the input tables to:
+    # * fetch the table schema
+    # * generate fake fata for each column
+    # * generate the SQL 'insert into' statement
     for input_tbl in input_tbls:
 
         # write logging message to console
-        logger.info(f"\nGenerating fake data for: '{input_tbl}'.\n")
+        logger.debug(f"\nGenerating fake data for: '{input_tbl}'.\n")
 
         # write the query output to the tmp folder
         with open(f'tmp/{input_tbl}.csv', 'w') as tmp_sf_tbl_schema:
@@ -148,5 +155,21 @@ if __name__ == '__main__':
         # invoke the main orchestration logic per-input table
         generate_fake_data(input_tbl, df, num_records)
 
-        # TODO: insert the fake data
-        insert_fake_data()
+    logger.info('\n#########################################################')
+    logger.info('# Start sequence for inserting the generated data.')
+    logger.info('#########################################################\n')
+
+    # iterate through each of the input tables to now execute the 'INSERT INTO' statements
+    for input_tbl in input_tbls:
+
+        logger.info(f"Insert fake data for: '{input_tbl}'.")
+
+        with open(f'op/{input_tbl}.sql') as ip_sql:
+            generated_sf_query = ip_sql.read()
+
+        # execute the sf query
+        snowflake_client.snowflake_query(query=generated_sf_query)
+
+    logger.info('\n#########################################################')
+    logger.info('# Finished! Check target tables.')
+    logger.info('#########################################################\n')
