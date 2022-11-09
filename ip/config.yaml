@@ -2,10 +2,10 @@
 general_params:
   env: dev
   input_tbls:
-    products
-    brands
-    categories
-    stocks
+    - products
+    - brands
+    - categories
+    - stocks
   num_records_to_generate: 2
 db_connection_params:
   snowflake_account: <snowflake_account>.ap-southeast-2
