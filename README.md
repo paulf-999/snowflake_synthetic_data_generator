@@ -44,12 +44,6 @@ Run `make run` to:
 
 ---
 
-## TODOs
-
-* Complete the function 'insert_fake_data() in `gen_fake_data.py`.
-
----
-
 ## Credits
 
 This is an adapted version of the following [README](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc).
