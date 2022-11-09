@@ -14,7 +14,7 @@ Python scripts to create synthetic data in Snowflake, based upon a list of input
 
 * `Makefile`
 * `Python`
-* The Python packages (see `requirements.txt`):
+* Python packages (see `requirements.txt`):
   * `snowflake-connector-python` - to query the Snowflake DB from the python script.
   * `Faker` - to generate fake data (see `py/dt_data_generation.py`).
   * `pandas` - to write Snowflake query output to Pandas data frames.
