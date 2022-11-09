@@ -93,7 +93,7 @@ def generate_fake_data(input_tbl, df, num_records):
 
             if row['data_type'].startswith('TIMESTAMP'):
                 logger.debug(r'\Data type = timestamp')
-                fake_time_data = dt_generator.gen_fake_time_data(row)
+                fake_time_data = dt_generator.gen_fake_date_time_data(row)
 
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_time_data)

@@ -26,7 +26,7 @@ def create_snowflake_connection(conn=''):
         conn = snowflake.connector.connect(
             user=sf_conn_details['sf_username'],
             password=sf_conn_details['sf_pass'],
-            # private_key=sf_conn_details["sf_p8_key_path"],
+            # private_key=pkb,
             account=sf_conn_details['sf_account'],
             warehouse=sf_conn_details['sf_wh'],
             role=sf_conn_details['sf_role'],
@@ -82,7 +82,7 @@ def private_key_bytes(p8_key_path, p8_passphrase):
     with open(p8_key_path, 'rb') as key:
         p_key = serialization.load_pem_private_key(
             key.read(),
-            p8_passphrase,
+            None,  # todo - convert p8_passphrase into a None type
             backend=default_backend()
         )
 
@@ -96,4 +96,5 @@ def private_key_bytes(p8_key_path, p8_passphrase):
 if __name__ == '__main__':
     """This is executed when run from the command line"""
 
-    snowflake_query(query='SELECT current_version();')
+    query_op = snowflake_query(query='SELECT current_version();')
+    logger.info(f'query_op = {query_op}')
