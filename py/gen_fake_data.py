@@ -24,14 +24,6 @@ logger = logging.getLogger('application_logger')
 logger.setLevel(logging.INFO)
 
 
-def insert_fake_data():
-    """Insert generated fake data into target table"""
-
-    logger.debug('Hello, world!')
-
-    return
-
-
 def process_generated_sql(generated_sql, row, column_count, df, fake_data):
     """repeated orchestration logic used for every (data type) fake data generation"""
 
@@ -123,6 +115,18 @@ def read_table_schema(input_tbl):
     return df
 
 
+def generate_table_schema(input_tbl):
+    """get the input table's schema definition & write it to a file in the tmp folder"""
+
+    with open(f'tmp/{input_tbl}.csv', 'w') as tmp_sf_tbl_schema:
+        # fetch the schema of the given input table
+        sf_query_op = snowflake_client.snowflake_query(query=f'DESC table {input_tbl};')
+
+        tmp_sf_tbl_schema.write(sf_query_op)
+
+    return
+
+
 if __name__ == '__main__':
     """This is executed when run from the command line"""
 
@@ -143,11 +147,8 @@ if __name__ == '__main__':
         # write logging message to console
         logger.debug(f"\nGenerating fake data for: '{input_tbl}'.\n")
 
-        # write the query output to the tmp folder
-        with open(f'tmp/{input_tbl}.csv', 'w') as tmp_sf_tbl_schema:
-            # fetch the schema of the given input table
-            sf_query_op = snowflake_client.snowflake_query(query=f'DESC table {input_tbl};')
-            tmp_sf_tbl_schema.write(sf_query_op)
+        # write table schema op to the tmp folder
+        generate_table_schema(input_tbl)
 
         # read the table schema into a df
         df = read_table_schema(input_tbl)
