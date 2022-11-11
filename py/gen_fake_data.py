@@ -81,28 +81,28 @@ def orchestrate_fake_data_generation(input_tbl, df, num_records):
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_string_data)
 
-            if row['data_type'].startswith('NUMBER') or row['data_type'].startswith('NUMERIC'):
+            elif row['data_type'].startswith('NUMBER') or row['data_type'].startswith('NUMERIC'):
                 logger.debug('Data type = number')
                 fake_numeric_data = dt_generator.gen_fake_numeric_data(row)
 
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_numeric_data)
 
-            if row['data_type'].startswith('DATE') or row['data_type'].startswith('TIME'):
+            elif row['data_type'].startswith('DATE') or row['data_type'].startswith('TIME'):
                 logger.debug('Data type = timestamp')
                 fake_time_data = dt_generator.gen_fake_date_time_data(row)
 
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_time_data)
 
-            if row['data_type'].startswith('BOOLEAN'):
+            elif row['data_type'].startswith('BOOLEAN'):
                 logger.debug('Data type = boolean')
                 fake_boolean_data = dt_generator.gen_fake_boolean_data(row)
 
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_boolean_data)
 
-            if row['data_type'].startswith('BINARY'):
+            elif row['data_type'].startswith('BINARY'):
                 logger.info('Data type = binary')
                 logger.info('################################################################')
                 logger.info('INFO: This query requires manual intervention, due to different syntax used')

@@ -45,4 +45,5 @@ pids
 config_mine.yaml
 
 # generated sql output
-op/*.sql
+op/data_src_a/
+op/truncate_tbl_statements/*.sql

@@ -22,12 +22,12 @@ def get_general_params():
 
     # data_src table specific key/values
     data_src_ip_tbls = {}
-    data_src_ip_tbls['data_src_a'] = data['data_src_tables']['data_src_a_src_tables']
+    data_src_ip_tbls['data_src_a'] = data['data_src_tables']['data_src_a_tables']
 
     return data_src, data_src_ip_tbls, num_records
 
 
-def get_sf_conn_params():
+def get_sf_conn_params(data_src):
     """get snowflake db connections params from input config"""
     data = read_ip()
 

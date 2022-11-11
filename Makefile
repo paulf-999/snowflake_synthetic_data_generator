@@ -34,7 +34,7 @@ clean: get_ips
 	@echo -e "------------------------------------------------------------------"
 	@echo -e "${COLOUR_TXT_FMT_OPENING}Target 'clean'. Remove any redundant files, e.g. downloads.${COLOUR_TXT_FMT_CLOSING}"
 	@echo -e "------------------------------------------------------------------"
-	@rm -rf tmp/${DATA_SRC}/ && rm -rf op/${DATA_SRC}/
+	@rm -rf tmp/${DATA_SRC}/ && rm -rf op/${DATA_SRC}/insert_statements/
 
 #############################################################################################
 # Setup/validation targets: 'get_ips' & 'validate_user_ip'
