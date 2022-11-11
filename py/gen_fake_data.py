@@ -16,7 +16,7 @@ import pandas as pd
 # custom modules
 import inputs
 import dt_data_generation as dt_generator
-import snowflake_client
+import sql_functions
 
 # Set up a specific logger with our desired output level
 logging.basicConfig(format='%(message)s')
@@ -25,7 +25,7 @@ logger.setLevel(logging.INFO)
 
 
 def process_generated_sql(generated_sql, row, column_count, df, fake_data):
-    """repeated orchestration logic used for every (data type) fake data generation"""
+    """repeated orchestration logic used for every data type's fake data generation"""
 
     # append the generated output to the SQL 'insert into' statement
     logger.debug(f'column_count= {column_count}')
@@ -36,18 +36,25 @@ def process_generated_sql(generated_sql, row, column_count, df, fake_data):
 
     # determine whether fake data has been generated for all cols in the df
     if column_count != len(df):
+        logger.debug(f"column_count doesn't match, len(df) = {len(df)}")
         generated_sql += f'{fake_data}, '
         column_count += 1
-    else:
+    elif column_count == len(df):
+        logger.debug(f'column_count MATCHES, len(df) = {len(df)}')
+        logger.debug(f'len(df) = {len(df)}')
         generated_sql += f'{fake_data}'
 
     return generated_sql, column_count
 
 
-def generate_fake_data(input_tbl, df, num_records):
+def orchestrate_fake_data_generation(input_tbl, df, num_records):
     """For a given input table, generate X (num_records) fake records"""
 
     logger.debug(f'len(df) = {len(df)}')
+
+    # verify the target dir exists
+    target_dir = f'op/{data_src}/insert_statements/'
+    sql_functions.verify_dir_exists(target_dir)
 
     # generated_sql will be continually be appended to in orchestrate_fake_data_generation()
     generated_sql = f'INSERT INTO {input_tbl.upper()} VALUES \n'
@@ -67,26 +74,44 @@ def generate_fake_data(input_tbl, df, num_records):
             # these 3 vars are lists used to store generated fake data
             fake_numeric_data = fake_string_data = fake_time_data = []
 
-            if row['data_type'].startswith('VARCHAR'):
-                logger.debug(r'\Data type = string')
-                fake_string_data = dt_generator.gen_fake_string_data(row)
+            if row['data_type'].startswith('VARCHAR') or row['data_type'].startswith('TEXT') or row['data_type'].startswith('STRING'):
+                logger.debug('Data type = string')
+                fake_string_data = dt_generator.orchestrate_gen_fake_string_data(row)
 
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_string_data)
 
-            if row['data_type'].startswith('NUMBER'):
-                logger.debug(r'\Data type = number')
+            if row['data_type'].startswith('NUMBER') or row['data_type'].startswith('NUMERIC'):
+                logger.debug('Data type = number')
                 fake_numeric_data = dt_generator.gen_fake_numeric_data(row)
 
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_numeric_data)
 
-            if row['data_type'].startswith('TIMESTAMP'):
-                logger.debug(r'\Data type = timestamp')
+            if row['data_type'].startswith('DATE') or row['data_type'].startswith('TIME'):
+                logger.debug('Data type = timestamp')
                 fake_time_data = dt_generator.gen_fake_date_time_data(row)
 
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_time_data)
+
+            if row['data_type'].startswith('BOOLEAN'):
+                logger.debug('Data type = boolean')
+                fake_boolean_data = dt_generator.gen_fake_boolean_data(row)
+
+                # append the generated output to the SQL 'insert into' statement
+                generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_boolean_data)
+
+            if row['data_type'].startswith('BINARY'):
+                logger.info('Data type = binary')
+                logger.info('################################################################')
+                logger.info('INFO: This query requires manual intervention, due to different syntax used')
+                logger.info('See: https://docs.snowflake.com/en/sql-reference/sql/insert.html#usage-notes')
+                logger.info('################################################################')
+                fake_binary_data = dt_generator.gen_fake_binary_data(row)
+
+                # append the generated output to the SQL 'insert into' statement
+                generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_binary_data)
 
         logger.debug(f'int(num_records) = {int(num_records)}')
         logger.debug(f'row_to_generate = {int(row_to_generate)+1}')
@@ -96,33 +121,47 @@ def generate_fake_data(input_tbl, df, num_records):
         else:
             generated_sql += ');'
 
-    with open(f'op/{input_tbl}.sql', 'w') as op_sql:
+    with open(f'{target_dir}/{input_tbl}.sql', 'w') as op_sql:
         logger.debug(generated_sql)
         op_sql.write(generated_sql)
 
 
-def read_table_schema(input_tbl):
-    """read the table schema into a df"""
+def read_sf_table_schema_to_df(data_src, input_tbl):
+    """read the input table schema into a pandas data frame (df)"""
 
     # sf table schema for 'describe() function output
-    col_names = [
-        'col_name', 'data_type', 'kind', 'null', 'default', 'primary_key', 'unique_key', 'check', 'expression', 'comment', 'policy_name', '-'
-    ]
+    col_names = ['col_name', 'data_type', 'kind', 'null', 'default', 'primary_key', 'unique_key', 'check', 'expression', 'comment', 'policy_name', '-']  # noqa
 
-    df = pd.read_csv(f'tmp/{input_tbl}.csv', sep=';', names=col_names).reset_index()
+    df = pd.read_csv(f'tmp/{data_src}/{input_tbl}.csv', sep=';', names=col_names).reset_index()
     logger.debug(df)
 
     return df
 
 
-def generate_table_schema(input_tbl):
-    """get the input table's schema definition & write it to a file in the tmp folder"""
+def main(data_src, ip_tbls, trunc_tbl_sql=''):
+    """ Main program orchestration logic used to generate the fake data.
+    # Iterate through each of the input tables to:
+    # * fetch the input table schema
+    # * generate fake data for each column data type
+    # * generate the SQL 'insert into' statement
+    # * generate SQL 'truncate table' statements to aid troubleshooting
+    """
+    for input_tbl in ip_tbls:
 
-    with open(f'tmp/{input_tbl}.csv', 'w') as tmp_sf_tbl_schema:
-        # fetch the schema of the given input table
-        sf_query_op = snowflake_client.snowflake_query(query=f'DESC table {input_tbl};')
+        # write logging message to console
+        logger.debug(f"\nGenerating fake data for: {data_src} - '{input_tbl}'.\n")
 
-        tmp_sf_tbl_schema.write(sf_query_op)
+        # write input table schema to the tmp folder
+        sql_functions.write_ip_table_schema_to_tmp(data_src, input_tbl)
+
+        # read the input table schema into a pandas data frame (df).
+        df = read_sf_table_schema_to_df(data_src, input_tbl)
+
+        # orchestrate the fake data generation logic, per column data type
+        orchestrate_fake_data_generation(input_tbl, df, num_records)
+
+        # to aid troubleshooting, also generate a master SQL truncate table statement
+        trunc_tbl_sql += sql_functions.generate_truncate_tbl_statements(data_src, input_tbl, trunc_tbl_sql)
 
     return
 
@@ -131,46 +170,26 @@ if __name__ == '__main__':
     """This is executed when run from the command line"""
 
     # get 'general' params from input config
-    input_tbls, num_records = inputs.get_general_params()
+    data_src, data_src_ip_tbls, num_records = inputs.get_general_params()
+
+    # initialise var
+    ip_tbls = ''
+
+    # fetch only the input tables for the data source we're interested in
+    for dict_data_src, src_tables in data_src_ip_tbls.items():
+        if data_src == dict_data_src:
+            ip_tbls = src_tables
+    logger.info(f'INFO:\ndata_src = {data_src}. ip_tbls = {ip_tbls}')
 
     # validate connectivity to SF db
-    sf_query_op = snowflake_client.snowflake_query(query='SELECT current_version();')
-    logger.debug(f'sf_query_op = {sf_query_op}')
-    logger.info('\nINFO: Connectivity to SF db confirmed.')
+    sql_functions.validate_db_connectivity(data_src)
 
-    # iterate through each of the input tables to:
-    # * fetch the table schema
-    # * generate fake fata for each column
-    # * generate the SQL 'insert into' statement
-    for input_tbl in input_tbls:
+    # invoke main() to orchestrate the processing logic to generate fake data
+    main(data_src, ip_tbls)
 
-        # write logging message to console
-        logger.debug(f"\nGenerating fake data for: '{input_tbl}'.\n")
-
-        # write table schema op to the tmp folder
-        generate_table_schema(input_tbl)
-
-        # read the table schema into a df
-        df = read_table_schema(input_tbl)
-
-        # invoke the main orchestration logic per-input table
-        generate_fake_data(input_tbl, df, num_records)
+    # Start sequence for inserting the generated data.
+    # sql_functions.execute_generated_sql(data_src, ip_tbls)
 
     logger.info('\n#########################################################')
-    logger.info('# Start sequence for inserting the generated data.')
-    logger.info('#########################################################\n')
-
-    # iterate through each of the input tables to now execute the 'INSERT INTO' statements
-    for input_tbl in input_tbls:
-
-        logger.info(f"Insert fake data for: '{input_tbl}'.")
-
-        with open(f'op/{input_tbl}.sql') as ip_sql:
-            generated_sf_query = ip_sql.read()
-
-        # execute the sf query
-        snowflake_client.snowflake_query(query=generated_sf_query)
-
-    logger.info('\n#########################################################')
-    logger.info('# Finished! Check target tables.')
+    logger.info('Finished! Check target tables.')
     logger.info('#########################################################\n')
