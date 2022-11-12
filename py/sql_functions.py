@@ -48,13 +48,29 @@ def write_ip_table_schema_to_tmp(data_src, input_tbl):
     return
 
 
-def generate_truncate_tbl_statements(data_src, input_tbl, trunc_tbl_sql):
+def generate_truncate_tbl_statements(data_src, input_tbl, trunc_tbl_sql, len_ip_tbls, write_mode=''):
     """for each input table, generate a 'TRUNCATE TABLE statement to aid later troubleshooting"""
 
     trunc_tbl_sql = f'TRUNCATE TABLE {input_tbl};\n'
     logger.debug(trunc_tbl_sql)
 
-    with open(f'op/truncate_tbl_statements/truncate_{data_src}_tbls.sql', 'a') as op_sql:
+    target_file_path = f'op/truncate_tbl_statements/truncate_{data_src}_tbls.sql'
+
+    if (os.path.exists(target_file_path)):
+        num_lines = sum(1 for line in open(target_file_path))
+        logger.debug(f'len_ip_tbls = {len_ip_tbls}. num_lines = {num_lines}')
+
+        # the file already existed with values = overwrite it. Also append.
+        if num_lines == len_ip_tbls:
+            write_mode = 'w'
+        else:
+            write_mode = 'a'
+
+    # the file didn't previously exist, create it
+    else:
+        write_mode = 'w'
+
+    with open(target_file_path, write_mode) as op_sql:
         op_sql.write(trunc_tbl_sql)
 
     return trunc_tbl_sql

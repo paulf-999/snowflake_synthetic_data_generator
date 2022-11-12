@@ -22,7 +22,6 @@ fake_data_generator.add_provider(credit_card)
 fake_data_generator.add_provider(internet)
 
 
-#####################################################################################################################
 def gen_fake_string_person_data(row, fake_string_data=''):
     """generate fake string data, specifically person-type data"""
 

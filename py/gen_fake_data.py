@@ -160,7 +160,7 @@ def main(data_src, ip_tbls, trunc_tbl_sql=''):
         orchestrate_fake_data_generation(input_tbl, df, num_records)
 
         # to aid troubleshooting, also generate a master SQL truncate table statement
-        trunc_tbl_sql += sql_functions.generate_truncate_tbl_statements(data_src, input_tbl, trunc_tbl_sql)
+        trunc_tbl_sql += sql_functions.generate_truncate_tbl_statements(data_src, input_tbl, trunc_tbl_sql, len(ip_tbls))
 
     return
 

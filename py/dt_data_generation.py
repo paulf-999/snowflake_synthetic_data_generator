@@ -22,44 +22,41 @@ current_dt_obj = datetime.now()
 def orchestrate_gen_fake_string_data(row, fake_string_data=''):
     """generate fake string data for a given string field"""
 
+    logger.debug(f"row['col_name'].upper() = {row['col_name'].upper()}")
+
     ##########################################################
     # Person-specific fake data (using Faker)
     ##########################################################
     for substring in ['FIRST_NAME', 'LAST_NAME', 'SURNAME', 'FULL_NAME']:
-        if row['col_name'].upper() in substring:
-            logger.debug('Called gen_fake_string_person_data()')
+        if substring in row['col_name'].upper():
             fake_string_data = string_data_generation.gen_fake_string_person_data(row)
 
     ##########################################################
     # Location-specific fake data (using Faker)
     ##########################################################
     for substring in ['COUNTRY', 'STATE', 'CITY', 'TOWN', 'POSTCODE', 'POST_CODE', 'POSTALCODE', 'STREET', 'ADDRESS']:
-        if row['col_name'].upper() in substring:
-            logger.debug('Called gen_fake_string_location_data()')
+        if substring in row['col_name'].upper():
+            logger.debug('Called location func')
             fake_string_data = string_data_generation.gen_fake_string_location_data(row)
 
     ##########################################################
     # Contact details-specific fake data (using Faker)
     ##########################################################
     for substring in ['PHONE', 'MOBILE', 'FAX', 'EMAIL']:
-        if row['col_name'].upper() in substring:
-            logger.debug('Called gen_fake_string_contact_details_data()')
+        if substring in row['col_name'].upper():
             fake_string_data = string_data_generation.gen_fake_string_contact_details_data(row)
 
     ##########################################################
     # Other fake data (using Faker)
     ##########################################################
     for substring in ['EXPIRYDATE', 'EXPIRY_DATE', 'ID', 'DATE']:
-        if row['col_name'].upper() in substring:
-            logger.debug('Called gen_fake_string_other_data()')
+        if substring in row['col_name'].upper():
             fake_string_data = string_data_generation.gen_fake_string_other_data(row)
 
-    logger.info(f'fake_string_data = {fake_string_data}')
+    logger.debug(f'fake_string_data = {fake_string_data}')
 
-    # If `fake_string_data` hasn't yet been populated, it means there hasn't been a match to any of the above scenarios.
-    # As such, we should generate a random string for all other string data
-    if len(fake_string_data) == 0:
-        logger.debug('Called gen_fake_default_string_data()')
+    if len(str(fake_string_data)) == 0:
+        # generate fake string data for all other string data (i.e., for string data that doesn't match the above use cases)
         fake_string_data = string_data_generation.gen_fake_default_string_data(row)
 
     return fake_string_data
