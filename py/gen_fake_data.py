@@ -41,7 +41,6 @@ def process_generated_sql(generated_sql, row, column_count, df, fake_data):
         column_count += 1
     elif column_count == len(df):
         logger.debug(f'column_count MATCHES, len(df) = {len(df)}')
-        logger.debug(f'len(df) = {len(df)}')
         generated_sql += f'{fake_data}'
 
     return generated_sql, column_count
@@ -188,7 +187,7 @@ if __name__ == '__main__':
     main(data_src, ip_tbls)
 
     # Start sequence for inserting the generated data.
-    # sql_functions.execute_generated_sql(data_src, ip_tbls)
+    sql_functions.execute_generated_sql(data_src, ip_tbls)
 
     logger.info('\n#########################################################')
     logger.info('Finished! Check target tables.')

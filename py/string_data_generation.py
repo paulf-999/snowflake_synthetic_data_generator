@@ -22,44 +22,6 @@ fake_data_generator.add_provider(credit_card)
 fake_data_generator.add_provider(internet)
 
 
-def orchestrate_gen_fake_string_data(row, fake_string_data=''):
-    """generate fake string data for a given string field"""
-
-    ##########################################################
-    # Person-specific fake data (using Faker)
-    ##########################################################
-    for substring in ['FIRST_NAME', 'LAST_NAME', 'SURNAME', 'FULL_NAME']:
-        if row['col_name'].upper() in substring:
-            fake_string_data = gen_fake_string_person_data(row)
-
-    ##########################################################
-    # Location-specific fake data (using Faker)
-    ##########################################################
-    for substring in ['COUNTRY', 'STATE', 'CITY', 'TOWN', 'POSTCODE', 'POST_CODE', 'POSTALCODE', 'STREET', 'ADDRESS']:
-        if row['col_name'].upper() in substring:
-            fake_string_data = gen_fake_string_location_data(row)
-
-    ##########################################################
-    # Contact details-specific fake data (using Faker)
-    ##########################################################
-    for substring in ['PHONE', 'MOBILE', 'FAX', 'EMAIL']:
-        if row['col_name'].upper() in substring:
-            fake_string_data = gen_fake_string_contact_details_data(row)
-
-    ##########################################################
-    # Other fake data (using Faker)
-    ##########################################################
-    for substring in ['EXPIRYDATE', 'EXPIRY_DATE', 'ID', 'DATE']:
-        if row['col_name'].upper() in substring:
-            fake_string_data = gen_fake_string_other_data(row)
-
-    else:
-        # generate fake string data for all other string data (i.e., for string data that doesn't match the above use cases)
-        fake_string_data = gen_fake_default_string_data(row)
-
-    return fake_string_data
-
-
 #####################################################################################################################
 def gen_fake_string_person_data(row, fake_string_data=''):
     """generate fake string data, specifically person-type data"""

@@ -7,7 +7,8 @@ def read_ip():
     """Read input from config file"""
     working_dir = os.getcwd()
 
-    with open(os.path.join(working_dir, 'ip', 'config_mine.yaml')) as ip_yml:
+    with open(os.path.join(working_dir, 'ip', 'config.yaml')) as ip_yml:
+        # with open(os.path.join(working_dir, 'ip', 'config_mine.yaml')) as ip_yml:
         data = yaml.safe_load(ip_yml)
 
     return data
