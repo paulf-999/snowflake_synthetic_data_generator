@@ -14,10 +14,10 @@ logger = logging.getLogger('application_logger')
 logger.setLevel(logging.INFO)
 
 
-def create_snowflake_connection(conn=''):
+def create_snowflake_connection(data_src, conn=''):
     """create a sf connection instance"""
     # get inputs
-    sf_conn_details = inputs.get_sf_conn_params()
+    sf_conn_details = inputs.get_sf_conn_params(data_src)
 
     # if a p8 key is used, render the key as required
     # pkb = private_key_bytes(sf_conn_details["sf_p8_key_path"], sf_conn_details["sf_p8_key_passphrase"])
@@ -53,11 +53,11 @@ def create_snowflake_connection(conn=''):
     return conn
 
 
-def snowflake_query(query, sf_query_op=''):
+def snowflake_query(query, data_src, sf_query_op=''):
     """Connect to SF DB & run query"""
 
     # establish a SF connection
-    conn = create_snowflake_connection()
+    conn = create_snowflake_connection(data_src)
 
     cursor = conn.cursor()
 
@@ -96,5 +96,5 @@ def private_key_bytes(p8_key_path, p8_passphrase):
 if __name__ == '__main__':
     """This is executed when run from the command line"""
 
-    query_op = snowflake_query(query='SELECT current_version();')
-    logger.info(f'query_op = {query_op}')
+    query_test_result = snowflake_query(query='SELECT current_version();')
+    logger.info(f'query_test_result = {query_test_result}')

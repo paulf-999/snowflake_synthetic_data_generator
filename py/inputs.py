@@ -8,6 +8,7 @@ def read_ip():
     working_dir = os.getcwd()
 
     with open(os.path.join(working_dir, 'ip', 'config_mine.yaml')) as ip_yml:
+        # with open(os.path.join(working_dir, 'ip', 'config_mine.yaml')) as ip_yml:
         data = yaml.safe_load(ip_yml)
 
     return data
@@ -17,13 +18,17 @@ def get_general_params():
     """get 'general' params from input config"""
     data = read_ip()
 
-    input_tbls = data['general_params']['input_tbls']
+    data_src = data['general_params']['data_src']
     num_records = data['general_params']['num_records_to_generate']
 
-    return input_tbls, num_records
+    # data_src table specific key/values
+    data_src_ip_tbls = {}
+    data_src_ip_tbls['data_src_a'] = data['data_src_tables']['data_src_a_tables']
+
+    return data_src, data_src_ip_tbls, num_records
 
 
-def get_sf_conn_params():
+def get_sf_conn_params(data_src):
     """get snowflake db connections params from input config"""
     data = read_ip()
 
