@@ -19,7 +19,7 @@ fake_data_generator = Faker('en_IE')  # TODO - parameterize this
 current_dt_obj = datetime.now()
 
 
-def orchestrate_gen_fake_string_data(row, fake_string_data=''):
+def orchestrate_gen_fake_string_data(row, input_tbl_pk, fake_string_data=''):
     """generate fake string data for a given string field"""
 
     logger.debug(f"row['col_name'].upper() = {row['col_name'].upper()}")
@@ -29,7 +29,7 @@ def orchestrate_gen_fake_string_data(row, fake_string_data=''):
     ##########################################################
     for substring in ['FIRST_NAME', 'LAST_NAME', 'SURNAME', 'FULL_NAME']:
         if substring in row['col_name'].upper():
-            fake_string_data = string_data_generation.gen_fake_string_person_data(row)
+            fake_string_data = string_data_generation.gen_fake_string_person_data(row, input_tbl_pk)
 
     ##########################################################
     # Location-specific fake data (using Faker)
@@ -44,14 +44,14 @@ def orchestrate_gen_fake_string_data(row, fake_string_data=''):
     ##########################################################
     for substring in ['PHONE', 'MOBILE', 'FAX', 'EMAIL']:
         if substring in row['col_name'].upper():
-            fake_string_data = string_data_generation.gen_fake_string_contact_details_data(row)
+            fake_string_data = string_data_generation.gen_fake_string_contact_details_data(row, input_tbl_pk)
 
     ##########################################################
     # Other fake data (using Faker)
     ##########################################################
     for substring in ['EXPIRYDATE', 'EXPIRY_DATE', 'ID', 'DATE']:
         if substring in row['col_name'].upper():
-            fake_string_data = string_data_generation.gen_fake_string_other_data(row)
+            fake_string_data = string_data_generation.gen_fake_string_other_data(row, input_tbl_pk)
 
     logger.debug(f'fake_string_data = {fake_string_data}')
 
@@ -62,7 +62,7 @@ def orchestrate_gen_fake_string_data(row, fake_string_data=''):
     return fake_string_data
 
 
-def gen_fake_numeric_data(row, fake_numeric_data=''):
+def gen_fake_numeric_data(row, input_tbl_pk, fake_numeric_data=''):
     """generate fake numeric data for a given numeric field"""
 
     # if it's a 'quantity' field, limit to values 1-10
@@ -70,7 +70,12 @@ def gen_fake_numeric_data(row, fake_numeric_data=''):
         fake_numeric_data = random.randint(1, 10)
     # to facilitate table joins, limit IDs to a range of 10 values
     elif 'ID' in row['col_name'].upper():
-        fake_numeric_data = random.randint(1, 10)
+        # if the input column is a PK ensure the generated data is unique
+        if input_tbl_pk == row['col_name']:
+            # the likelihood of generating a colliding value with this range is low
+            fake_numeric_data = random.randint(1, 10000)
+        else:
+            fake_numeric_data = random.randint(1, 10)
     # limit price to 100
     elif 'PRICE' in row['col_name'].upper():
         fake_numeric_data = str(f"'{random.randint(1, 100)}.00'")
@@ -79,7 +84,7 @@ def gen_fake_numeric_data(row, fake_numeric_data=''):
         fake_numeric_data = random.randint(date.today().year-5, date.today().year)
     # generate fake numeric data for everything else
     else:
-        # Limit to generated number range to 50. I found generating numbers to the precision values generated (not useful) huge values.
+        # limit to generated number range to 50. I found generating numbers to the precision values generated (not useful) huge values.
         fake_numeric_data = random.randint(1, 50)
 
         # though if you do want to generate fake data to precision, use the below:

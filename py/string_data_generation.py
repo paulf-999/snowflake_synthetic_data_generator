@@ -22,16 +22,19 @@ fake_data_generator.add_provider(credit_card)
 fake_data_generator.add_provider(internet)
 
 
-def gen_fake_string_person_data(row, fake_string_data=''):
+def gen_fake_string_person_data(row, input_tbl_pk, fake_string_data=''):
     """generate fake string data, specifically person-type data"""
 
     if 'FIRST_NAME' in row['col_name'].upper():
         fake_string_data = fake_data_generator.first_name()
-    # to facilitate table joins, limit IDs to a range of 10 values
     elif 'LAST_NAME' in row['col_name'].upper() or 'SURNAME' in row['col_name'].upper():
         fake_string_data = fake_data_generator.last_name()
     elif 'FULL_NAME' in row['col_name'].upper():
-        fake_string_data = fake_data_generator.name()
+        # if the input column is a PK ensure the generated data is unique
+        if input_tbl_pk == row['col_name']:
+            fake_string_data = fake_data_generator.unique.name()
+        else:
+            fake_string_data = fake_data_generator.name()
 
     return fake_string_data
 
@@ -57,24 +60,37 @@ def gen_fake_string_location_data(row, fake_string_data=''):
     return fake_string_data
 
 
-def gen_fake_string_contact_details_data(row, fake_string_data=''):
+def gen_fake_string_contact_details_data(row, input_tbl_pk, fake_string_data=''):
     """generate fake string data, specifically contact detail data"""
 
     if 'PHONE' in row['col_name'].upper() or 'MOBILE' in row['col_name'].upper() or 'FAX' in row['col_name'].upper():
-        fake_string_data = fake_data_generator.phone_number()
+        # if the input column is a PK ensure the generated data is unique
+        if input_tbl_pk == row['col_name']:
+            fake_string_data = fake_data_generator.unique.phone_number()
+        else:
+            fake_string_data = fake_data_generator.phone_number()
     elif 'EMAIL' in row['col_name'].upper():
-        fake_string_data = fake_data_generator.ascii_free_email()
+        # if the input column is a PK ensure the generated data is unique
+        if input_tbl_pk == row['col_name']:
+            fake_string_data = fake_data_generator.unique.ascii_free_email()
+        else:
+            fake_string_data = fake_data_generator.ascii_free_email()
 
     return fake_string_data
 
 
-def gen_fake_string_other_data(row, fake_string_data=''):
+def gen_fake_string_other_data(row, input_tbl_pk, fake_string_data=''):
     """generate fake string data for other well-known use cases"""
 
     if 'EXPIRYDATE' in row['col_name'].upper() or 'EXPIRY_DATE' in row['col_name'].upper():
         fake_string_data = fake_data_generator.credit_card_expire()
     elif 'ID' in row['col_name'].upper():
-        fake_string_data = str(random.randint(1, 10))
+        # if the input column is a PK ensure the generated data is unique
+        if input_tbl_pk == row['col_name']:
+            # the likelihood of generating a colliding value with this range is low
+            fake_string_data = str(random.randint(1, 10000))
+        else:
+            fake_string_data = str(random.randint(1, 10))
     # in case a date field is accidentally captured as a string, include data generation for it here
     elif 'DATE' in row['col_name'].upper():
         # TODO - try and randomise this value slightly
