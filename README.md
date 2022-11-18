@@ -1,11 +1,14 @@
 # Snowflake Synthetic Data Generator
 
-Python scripts to create synthetic data in Snowflake, based upon a list of input table schemas provided.
+Python scripts to generate synthetic data in Snowflake, based upon a list of input tables provided. The scripts rely on reading the input table schemas to understand the name & data types of columns, to in turn use the Python library 'Faker' to generate meaningful fake data.
+
+python library 'Faker' is used to generate meaningful fake data, based upon the 
 
 ## Summary
 
 * For each input table listed in `ip/config.yaml`, these scripts generate X amount of fake data records.
   * Where X is based upon the value of `num_records_to_generate` in `ip/config.yaml`.
+* The script reads the table schemas of each input table list provided to understand the name & data types of inputs columns, to in turn generate fake data..
 * The script then inserts the generated fake data into each of the target tables.
 
 ---
@@ -33,14 +36,12 @@ Before you begin, ensure you have met the following requirements:
 Run `make run` to:
 
 * Write the table schemas for each input table listed underneath the `input_tbls` key in `ip/config.yaml`.
-  * Note: the table schema output is written to `tmp/{input_tbl}.csv`.
-  * See the python function `get_table_schema()` in `snowflake_query.py`.
+  * Note: the table schema output is written to `tmp/{input_tbl}.csv`. See the python function `get_table_schema()` in `snowflake_query.py` for more details.
 * Generate X amount of fake data records (based upon the value of `num_records_to_generate` in `ip/config.yaml`) for each data type within each input table
-  * Note: the generated fake data for each table is written to `op/{input_tbl}.csv`.
-  * See the function `generate_fake_data()` in `gen_fake_data.py`.
+  * Note: the generated fake data for each table is written to `op/{input_tbl}.csv`. See the function `generate_fake_data()` in `gen_fake_data.py` for more details.
 * Insert the generated fake data into each of the target tables listed underneath the `input_tbls` key in `ip/config.yaml`.
   generate_fake_data
-  * See the function `insert_fake_data()` in `gen_fake_data.py`.
+  * See the function `insert_fake_data()` in `gen_fake_data.py` for more details.
 
 ---
 
