@@ -27,7 +27,7 @@ def validate_db_connectivity(data_src):
 
     sf_query_op = snowflake_client.snowflake_query(query='SELECT current_version();', data_src=data_src)
     logger.debug(f'sf_query_op = {sf_query_op}')
-    logger.info('\nINFO: Connectivity to SF db confirmed.\n')
+    logger.info('\nINFO: Connectivity to SF db confirmed.')
 
     return
 

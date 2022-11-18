@@ -46,10 +46,11 @@ def process_generated_sql(generated_sql, row, column_count, df, fake_data):
     return generated_sql, column_count
 
 
-def orchestrate_fake_data_generation(input_tbl, df, num_records):
+def orchestrate_fake_data_generation(input_tbl, input_tbl_pk, df, num_records):
     """For a given input table, generate X (num_records) fake records"""
 
     logger.debug(f'len(df) = {len(df)}')
+    logger.debug(f'input_tbl_pk = {input_tbl_pk}')
 
     # verify the target dir exists
     target_dir = f'op/{data_src}/insert_statements/'
@@ -75,14 +76,14 @@ def orchestrate_fake_data_generation(input_tbl, df, num_records):
 
             if row['data_type'].startswith('VARCHAR') or row['data_type'].startswith('TEXT') or row['data_type'].startswith('STRING'):
                 logger.debug('Data type = string')
-                fake_string_data = dt_generator.orchestrate_gen_fake_string_data(row)
+                fake_string_data = dt_generator.orchestrate_gen_fake_string_data(row, input_tbl_pk)
 
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_string_data)
 
             elif row['data_type'].startswith('NUMBER') or row['data_type'].startswith('NUMERIC'):
                 logger.debug('Data type = number')
-                fake_numeric_data = dt_generator.gen_fake_numeric_data(row)
+                fake_numeric_data = dt_generator.gen_fake_numeric_data(row, input_tbl_pk)
 
                 # append the generated output to the SQL 'insert into' statement
                 generated_sql, column_count = process_generated_sql(generated_sql, row, column_count, df, fake_numeric_data)
@@ -137,7 +138,7 @@ def read_sf_table_schema_to_df(data_src, input_tbl):
     return df
 
 
-def main(data_src, ip_tbls, trunc_tbl_sql=''):
+def main(data_src, input_tbl_pk_pairs, trunc_tbl_sql=''):
     """ Main program orchestration logic used to generate the fake data.
     # Iterate through each of the input tables to:
     # * fetch the input table schema
@@ -145,10 +146,20 @@ def main(data_src, ip_tbls, trunc_tbl_sql=''):
     # * generate the SQL 'insert into' statement
     # * generate SQL 'truncate table' statements to aid troubleshooting
     """
-    for input_tbl in ip_tbls:
+
+    # initialise vars
+    input_tbls = []
+    input_tbl_pks = []
+
+    for input_tbl_pair in input_tbl_pk_pairs:
+
+        input_tbls.append(input_tbl_pair['table_name'])
+        input_tbl_pks.append(input_tbl_pair['pk'])
+
+    for input_tbl, input_tbl_pk in zip(input_tbls, input_tbl_pks):
 
         # write logging message to console
-        logger.debug(f"\nGenerating fake data for: {data_src} - '{input_tbl}'.\n")
+        logger.info(f"Generating fake data for: {data_src} - '{input_tbl}'.")
 
         # write input table schema to the tmp folder
         sql_functions.write_ip_table_schema_to_tmp(data_src, input_tbl)
@@ -157,10 +168,10 @@ def main(data_src, ip_tbls, trunc_tbl_sql=''):
         df = read_sf_table_schema_to_df(data_src, input_tbl)
 
         # orchestrate the fake data generation logic, per column data type
-        orchestrate_fake_data_generation(input_tbl, df, num_records)
+        orchestrate_fake_data_generation(input_tbl, input_tbl_pk, df, num_records)
 
         # to aid troubleshooting, also generate a master SQL truncate table statement
-        trunc_tbl_sql += sql_functions.generate_truncate_tbl_statements(data_src, input_tbl, trunc_tbl_sql, len(ip_tbls))
+        trunc_tbl_sql += sql_functions.generate_truncate_tbl_statements(data_src, input_tbl, trunc_tbl_sql, len(input_tbl_pk_pairs))
 
     return
 
@@ -171,23 +182,31 @@ if __name__ == '__main__':
     # get 'general' params from input config
     data_src, data_src_ip_tbls, num_records = inputs.get_general_params()
 
-    # initialise var
-    ip_tbls = ''
+    # initialise vars
+    input_tbl_pk_pairs = ''
+    input_tbls = []
+    input_tbl_pks = []
 
     # fetch only the input tables for the data source we're interested in
-    for dict_data_src, src_tables in data_src_ip_tbls.items():
+    for dict_data_src, src_tables_pk_pairs in data_src_ip_tbls.items():
+        # only fetch the ip_tbl_pk_pairs for the matching data_src
         if data_src == dict_data_src:
-            ip_tbls = src_tables
-    logger.info(f'INFO:\ndata_src = {data_src}. ip_tbls = {ip_tbls}')
+
+            input_tbl_pk_pairs = src_tables_pk_pairs
+
+            for src_tbl in src_tables_pk_pairs:
+                input_tbls.append(src_tbl['table_name'])
+                input_tbl_pks.append(src_tbl['pk'])
+    logger.info(f'INFO:\ndata_src = {data_src}. ip_tbls = {input_tbls}\n')
 
     # validate connectivity to SF db
     sql_functions.validate_db_connectivity(data_src)
 
     # invoke main() to orchestrate the processing logic to generate fake data
-    main(data_src, ip_tbls)
+    main(data_src, input_tbl_pk_pairs)
 
     # Start sequence for inserting the generated data.
-    sql_functions.execute_generated_sql(data_src, ip_tbls)
+    sql_functions.execute_generated_sql(data_src, input_tbls)
 
     logger.info('\n#########################################################')
     logger.info('Finished! Check target tables.')
