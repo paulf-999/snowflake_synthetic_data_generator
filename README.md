@@ -1,8 +1,6 @@
 # Snowflake Synthetic Data Generator
 
-Python scripts to generate synthetic data in Snowflake, based upon a list of input tables provided. The scripts rely on reading the input table schemas to understand the name & data types of columns, to in turn use the Python library 'Faker' to generate meaningful fake data.
-
-python library 'Faker' is used to generate meaningful fake data, based upon the 
+Python scripts to generate synthetic data in Snowflake, based upon a list of input tables provided. The scripts rely on reading the input table schemas to understand the name & data types of columns, to in turn use the Python library `Faker` to generate meaningful fake data.
 
 ## Summary
 
