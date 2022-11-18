@@ -31,7 +31,7 @@ def gen_fake_string_person_data(row, input_tbl_pk, fake_string_data=''):
         fake_string_data = fake_data_generator.last_name()
     elif 'FULL_NAME' in row['col_name'].upper():
         # if the input column is a PK ensure the generated data is unique
-        if input_tbl_pk == row['col_name']:
+        if input_tbl_pk.upper() in row['col_name'].upper():
             fake_string_data = fake_data_generator.unique.name()
         else:
             fake_string_data = fake_data_generator.name()
@@ -65,13 +65,13 @@ def gen_fake_string_contact_details_data(row, input_tbl_pk, fake_string_data='')
 
     if 'PHONE' in row['col_name'].upper() or 'MOBILE' in row['col_name'].upper() or 'FAX' in row['col_name'].upper():
         # if the input column is a PK ensure the generated data is unique
-        if input_tbl_pk == row['col_name']:
+        if input_tbl_pk.upper() in row['col_name'].upper():
             fake_string_data = fake_data_generator.unique.phone_number()
         else:
             fake_string_data = fake_data_generator.phone_number()
     elif 'EMAIL' in row['col_name'].upper():
         # if the input column is a PK ensure the generated data is unique
-        if input_tbl_pk == row['col_name']:
+        if input_tbl_pk.upper() in row['col_name'].upper():
             fake_string_data = fake_data_generator.unique.ascii_free_email()
         else:
             fake_string_data = fake_data_generator.ascii_free_email()
@@ -86,9 +86,9 @@ def gen_fake_string_other_data(row, input_tbl_pk, fake_string_data=''):
         fake_string_data = fake_data_generator.credit_card_expire()
     elif 'ID' in row['col_name'].upper():
         # if the input column is a PK ensure the generated data is unique
-        if input_tbl_pk == row['col_name']:
+        if input_tbl_pk.upper() in row['col_name'].upper():
             # the likelihood of generating a colliding value with this range is low
-            fake_string_data = str(random.randint(1, 10000))
+            fake_string_data = str(random.randint(1, 500))
         else:
             fake_string_data = str(random.randint(1, 10))
     # in case a date field is accidentally captured as a string, include data generation for it here

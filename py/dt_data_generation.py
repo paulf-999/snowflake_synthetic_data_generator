@@ -71,9 +71,9 @@ def gen_fake_numeric_data(row, input_tbl_pk, fake_numeric_data=''):
     # to facilitate table joins, limit IDs to a range of 10 values
     elif 'ID' in row['col_name'].upper():
         # if the input column is a PK ensure the generated data is unique
-        if input_tbl_pk == row['col_name']:
+        if input_tbl_pk.upper() in row['col_name'].upper():
             # the likelihood of generating a colliding value with this range is low
-            fake_numeric_data = random.randint(1, 10000)
+            fake_numeric_data = random.randint(1, 500)
         else:
             fake_numeric_data = random.randint(1, 10)
     # limit price to 100
