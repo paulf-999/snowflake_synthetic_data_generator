@@ -15,7 +15,11 @@ db_connection_params:
   snowflake_db_schema:  # mandatory field
 data_src_tables:
   DATA_SRC_tables:  # update DATA source with your data source name (TODO: come back to this)
-    - products
-    - brands
-    - categories
-    - stocks
+    - table_name: products
+      pk: product_id
+    - table_name: brands
+      pk: brand_id
+    - table_name: categories
+      pk: category_id
+    - table_name: stocks
+      pk: product_id
