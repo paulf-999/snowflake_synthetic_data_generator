@@ -6,7 +6,13 @@ Python scripts to generate synthetic data in Snowflake, based upon a list of inp
 
 * For each input table listed in `ip/config.yaml`, these scripts generate X amount of fake data records.
   * Where X is based upon the value of `num_records_to_generate` in `ip/config.yaml`.
-* The script reads the table schemas of each input table list provided to understand the name & data types of inputs columns, to in turn generate fake data..
+* The script reads the table schemas of each input table list provided to understand the name & data types of inputs columns, to in turn generate fake data.
+* The script initially focusses on detecting the 5 groupings of Snowflake data types (see Summary of Data Types | docs.snowflake.com)[https://docs.snowflake.com/en/sql-reference/intro-summary-data-types.html] listed below:
+  * String (i.e.: `VARCHAR`, `TEXT` and `STRING`)
+  * Numeric (i.e.: `NUMBER`, `NUMERIC` and `DECIMAL`)
+  * Date (i.e., `DATE`, `DATETIME`, `TIME`, `TIMESTAMP`, `TIMESTAMP_{LTZ}/{_NTZ}/{_TZ}`)
+  * Boolean
+  * Binary
 * The script then inserts the generated fake data into each of the target tables.
 
 ---
