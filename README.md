@@ -10,7 +10,7 @@ Python scripts to generate synthetic data in Snowflake, based upon a list of inp
 * The script initially focusses on detecting the 5 groupings of Snowflake data types (see Summary of Data Types | docs.snowflake.com)[https://docs.snowflake.com/en/sql-reference/intro-summary-data-types.html] listed below:
   * String (i.e.: `VARCHAR`, `TEXT` and `STRING`)
   * Numeric (i.e.: `NUMBER`, `NUMERIC` and `DECIMAL`)
-  * Date (i.e., `DATE`, `DATETIME`, `TIME`, `TIMESTAMP`, `TIMESTAMP_{LTZ}/{_NTZ}/{_TZ}`)
+  * Date (i.e., `DATE`, `DATETIME`, `TIME`, `TIMESTAMP`, `TIMESTAMP_{LTZ}{_NTZ}{_TZ}`)
   * Boolean
   * Binary
 * The script then inserts the generated fake data into each of the target tables.
